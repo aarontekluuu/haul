@@ -66,6 +66,10 @@ Built for **USC Social Impact Hackathon** (Jan 23-27, 2026)
 - Cloudinary account
 - Remove.bg API key
 
+**Environment:**
+- Copy `backend/.env.example` → `backend/.env`
+- Copy `frontend/.env.example` → `frontend/.env`
+
 **Next Steps:**
 1. `/gsd:plan-phase 1` - Plan core infrastructure
 2. `/gsd:execute-phase 1` - Build database + API foundation
