@@ -1,0 +1,26 @@
+{
+  "name": "haul",
+  "version": "1.0.0",
+  "description": "**Your local thrift, swiped right**",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm:dev:*\" --names \"VITE,API\" --prefix-colors \"cyan,magenta\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aarontekluuu/haul.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/aarontekluuu/haul/issues"
+  },
+  "homepage": "https://github.com/aarontekluuu/haul#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
