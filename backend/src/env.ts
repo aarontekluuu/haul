@@ -4,6 +4,7 @@ export const env = cleanEnv(process.env, {
   NODE_ENV: str({ default: 'development' }),
   PORT: port({ default: 3000 }),
   FRONTEND_URL: str({ default: 'http://localhost:5173' }),
+  FRONTEND_URLS: str({ default: '' }),
   LOG_LEVEL: str({ default: 'info' }),
   SUPABASE_URL: str(),
   SUPABASE_SERVICE_ROLE_KEY: str(),

@@ -10,7 +10,16 @@ export const app = express()
 app.use(express.json())
 app.use(
   cors({
-    origin: env.FRONTEND_URL,
+    origin: (origin, callback) => {
+      const allowed = (env.FRONTEND_URLS || env.FRONTEND_URL)
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean)
+      if (!origin || allowed.includes(origin)) {
+        return callback(null, true)
+      }
+      return callback(new Error('CORS: origin not allowed'))
+    },
     credentials: true,
   }),
 )
