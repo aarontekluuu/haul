@@ -1,0 +1,257 @@
+import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { motion, useMotionValue, useTransform, useAnimation } from 'framer-motion'
+import { AppShell } from '../components/AppShell'
+import { BottomNav } from '../components/BottomNav'
+import { TopBar } from '../components/TopBar'
+import { items } from '../data/mock'
+
+export function SwipeDeck() {
+  const [index, setIndex] = useState(0)
+  const [bagCount, setBagCount] = useState(0)
+  const [showDetails, setShowDetails] = useState(false)
+  const controls = useAnimation()
+  const x = useMotionValue(0)
+  const rotate = useTransform(x, [-160, 160], [-10, 10])
+  const likeOpacity = useTransform(x, [0, 120], [0, 1])
+  const nopeOpacity = useTransform(x, [-120, 0], [1, 0])
+  const deck = useMemo(() => {
+    const stored = localStorage.getItem('haul-preferences')
+    if (!stored) {
+      return items
+    }
+    try {
+      const parsed = JSON.parse(stored) as {
+        categories?: string[]
+        priceRange?: [number, number]
+      }
+      const categories = parsed.categories || []
+      const maxPrice = parsed.priceRange?.[1]
+      return items.filter((item) => {
+        const categoryMatch =
+          categories.length === 0 ||
+          categories.includes('Everything') ||
+          categories.includes(item.category)
+        const priceMatch = maxPrice ? item.price <= maxPrice : true
+        return categoryMatch && priceMatch
+      })
+    } catch {
+      return items
+    }
+  }, [])
+  const current = deck[index]
+  const next = deck[index + 1]
+  const progress = deck.length
+    ? Math.min(((index + 1) / deck.length) * 100, 100)
+    : 0
+
+  const progressLabel = useMemo(() => {
+    if (!current) {
+      return 'Deck complete'
+    }
+    return `${index + 1} of ${items.length}`
+  }, [current, index])
+
+  const advance = () => {
+    setIndex((value) => Math.min(value + 1, deck.length))
+  }
+
+  const swipeCard = async (direction: 'left' | 'right') => {
+    await controls.start({
+      x: direction === 'right' ? 520 : -520,
+      opacity: 0,
+      transition: { duration: 0.25 },
+    })
+    if (direction === 'right') {
+      setBagCount((count) => count + 1)
+    }
+    advance()
+    controls.set({ x: 0, opacity: 1 })
+    x.set(0)
+    setShowDetails(false)
+  }
+
+  return (
+    <>
+      <AppShell>
+        <TopBar
+          title="Swipe Deck"
+          backTo="/"
+          action={
+            <Link
+              className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/70 text-xs font-semibold text-[var(--color-secondary)] shadow-sm"
+              to="/buyer/bag"
+            >
+              {bagCount}
+              <span className="sr-only">Bag</span>
+            </Link>
+          }
+        />
+
+        <div className="rounded-[28px] bg-white/80 p-5 shadow-sm">
+          <div className="flex items-center justify-between text-xs text-slate-500">
+            <span>Discover</span>
+            <span>{progressLabel}</span>
+          </div>
+          <div className="mt-3 h-2 w-full rounded-full bg-slate-100">
+            <div
+              className="h-full rounded-full bg-[var(--color-primary)]"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="relative min-h-[420px]">
+          {next && (
+            <div className="absolute inset-2 rounded-[30px] bg-white/70 shadow-sm">
+              <div
+                className="h-full w-full rounded-[30px] bg-cover bg-center"
+                style={{ backgroundImage: `url(${next.image})` }}
+              />
+            </div>
+          )}
+
+          {current ? (
+            <motion.div
+              className="absolute inset-0 rounded-[34px] bg-white shadow-lg"
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              style={{ x, rotate }}
+              animate={controls}
+              onDragEnd={(_, info) => {
+                if (info.offset.x > 120) {
+                  swipeCard('right')
+                  return
+                }
+                if (info.offset.x < -120) {
+                  swipeCard('left')
+                  return
+                }
+                controls.start({ x: 0, transition: { duration: 0.2 } })
+              }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div
+                className="relative h-full w-full rounded-[34px] bg-cover bg-center"
+                style={{ backgroundImage: `url(${current.image})` }}
+                onClick={() => setShowDetails(true)}
+              >
+                <motion.div
+                  className="absolute left-5 top-5 rounded-full border border-white/70 bg-white/80 px-3 py-1 text-xs font-semibold text-[var(--color-secondary)]"
+                  style={{ opacity: likeOpacity }}
+                >
+                  LIKE
+                </motion.div>
+                <motion.div
+                  className="absolute right-5 top-5 rounded-full border border-white/70 bg-white/80 px-3 py-1 text-xs font-semibold text-[var(--color-error)]"
+                  style={{ opacity: nopeOpacity }}
+                >
+                  PASS
+                </motion.div>
+                <div className="absolute inset-0 rounded-[34px] bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                <div className="absolute left-4 top-4 rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-[var(--color-ink)]">
+                  ${current.price}
+                </div>
+                <div className="absolute bottom-5 left-5 right-5 space-y-2 text-white">
+                  <div className="text-xl font-semibold">{current.name}</div>
+                  <div className="text-xs text-white/80">
+                    {current.store} · {current.distance}
+                  </div>
+                  <p className="text-xs leading-relaxed text-white/70">
+                    {current.description}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            <div className="flex h-full items-center justify-center rounded-[34px] bg-white/70 p-8 text-center text-sm text-slate-500">
+              No more items nearby. Adjust your preferences or check back later.
+            </div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-3 gap-3">
+          <button
+            className="rounded-full border border-slate-200 bg-white/70 py-3 text-sm font-semibold text-slate-500"
+            onClick={() => swipeCard('left')}
+            type="button"
+          >
+            Skip
+          </button>
+          <button
+            className="haul-shadow rounded-full bg-[var(--color-primary)] py-3 text-sm font-semibold text-white"
+            onClick={() => swipeCard('right')}
+            type="button"
+          >
+            Add to Bag
+          </button>
+          <Link
+            className="rounded-full border border-slate-200 bg-white/70 py-3 text-center text-sm font-semibold text-slate-600"
+            to="/buyer/bag"
+          >
+            Bag
+          </Link>
+        </div>
+
+        {current && showDetails && (
+          <div className="fixed inset-0 z-30 flex items-end justify-center bg-black/40 px-4 pb-6">
+            <motion.div
+              className="w-full max-w-[420px] rounded-[28px] bg-white p-5 shadow-xl"
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 40, opacity: 0 }}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-lg font-semibold">{current.name}</div>
+                  <div className="text-xs text-slate-500">
+                    {current.store} · {current.distance}
+                  </div>
+                </div>
+                <button
+                  className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-500"
+                  type="button"
+                  onClick={() => setShowDetails(false)}
+                >
+                  Close
+                </button>
+              </div>
+              <div className="mt-3 flex items-center gap-2 text-xs">
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">
+                  {current.condition}
+                </span>
+                <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">
+                  {current.category}
+                </span>
+              </div>
+              <p className="mt-3 text-sm text-slate-600">{current.description}</p>
+              <div className="mt-4 rounded-[18px] bg-slate-50 px-4 py-3 text-xs text-slate-600">
+                <div className="font-semibold text-slate-700">Pickup window</div>
+                <div className="mt-1">{current.pickupWindow}</div>
+                <div className="mt-1">{current.address}</div>
+              </div>
+              <div className="mt-4 flex gap-3">
+                <button
+                  className="flex-1 rounded-full border border-slate-200 py-3 text-sm font-semibold text-slate-600"
+                  type="button"
+                  onClick={() => setShowDetails(false)}
+                >
+                  Keep browsing
+                </button>
+                <button
+                  className="flex-1 rounded-full bg-[var(--color-primary)] py-3 text-sm font-semibold text-white"
+                  type="button"
+                  onClick={() => swipeCard('right')}
+                >
+                  Add to bag
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AppShell>
+      <BottomNav />
+    </>
+  )
+}
