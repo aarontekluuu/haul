@@ -1,12 +1,22 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AppShell } from '../components/AppShell'
 import { BottomNav } from '../components/BottomNav'
 import { TopBar } from '../components/TopBar'
-import { bagItems } from '../data/mock'
+import { items as mockItems } from '../data/mock'
+import { readBagIds, removeFromBag } from '../utils/bagStore'
 
 export function Bag() {
-  const [items, setItems] = useState(bagItems)
+  const [items, setItems] = useState<typeof mockItems>([])
+
+  useEffect(() => {
+    const ids = readBagIds()
+    if (!ids.length) {
+      setItems([])
+      return
+    }
+    setItems(mockItems.filter((item) => ids.includes(item.id)))
+  }, [])
   const subtotal = items.reduce((sum, item) => sum + item.price, 0)
   const breakdown = useMemo(() => {
     return items.reduce<Record<string, { total: number; items: typeof items }>>(
@@ -22,6 +32,7 @@ export function Bag() {
   }, [items])
 
   const handleRemove = (id: string) => {
+    removeFromBag(id)
     setItems((prev) => prev.filter((item) => item.id !== id))
   }
 

@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   AnimatePresence,
@@ -11,6 +11,7 @@ import { AppShell } from '../components/AppShell'
 import { BottomNav } from '../components/BottomNav'
 import { TopBar } from '../components/TopBar'
 import { items } from '../data/mock'
+import { addToBag, readBagIds } from '../utils/bagStore'
 
 export function SwipeDeck() {
   const [index, setIndex] = useState(0)
@@ -66,6 +67,10 @@ export function SwipeDeck() {
     setIndex((value) => Math.min(value + 1, deck.length))
   }
 
+  useEffect(() => {
+    setBagCount(readBagIds().length)
+  }, [])
+
   const swipeCard = async (direction: 'left' | 'right') => {
     setStamp(direction === 'right' ? 'like' : 'pass')
     await controls.start({
@@ -74,7 +79,8 @@ export function SwipeDeck() {
       transition: { duration: 0.25 },
     })
     setStamp(null)
-    if (direction === 'right') {
+    if (direction === 'right' && current) {
+      addToBag(current.id)
       setBagCount((count) => count + 1)
     }
     advance()
