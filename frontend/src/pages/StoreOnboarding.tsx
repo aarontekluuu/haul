@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { usePrivy } from '@privy-io/react-auth'
 import { AppShell } from '../components/AppShell'
 import { TopBar } from '../components/TopBar'
+import { apiPost } from '../utils/api'
 
 function StoreOnboardingInner() {
   const navigate = useNavigate()
-  const { ready, authenticated, user } = usePrivy()
+  const { ready, authenticated, user, getAccessToken } = usePrivy()
   const [name, setName] = useState('')
   const [address, setAddress] = useState('')
   const [hours, setHours] = useState('')
@@ -36,11 +37,42 @@ function StoreOnboardingInner() {
     }
   }, [])
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     localStorage.setItem(
       'haul-store-profile',
       JSON.stringify({ name, address, hours }),
     )
+    const token = await getAccessToken()
+    if (token) {
+      const coords = await new Promise<{ lat: number; lng: number }>((resolve) => {
+        if (!navigator.geolocation) {
+          resolve({ lat: 34.0522, lng: -118.2437 })
+          return
+        }
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            resolve({
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            })
+          },
+          () => resolve({ lat: 34.0522, lng: -118.2437 }),
+          { timeout: 5000 },
+        )
+      })
+
+      try {
+        await apiPost('/api/stores/register', token, {
+          name,
+          address,
+          hours,
+          lat: coords.lat,
+          lng: coords.lng,
+        })
+      } catch {
+        // Non-blocking for demo; local storage still drives UX.
+      }
+    }
     navigate('/store/upload')
   }
 

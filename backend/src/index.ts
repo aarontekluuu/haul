@@ -2,6 +2,8 @@ import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
 import { env } from './env'
+import { usersRouter } from './routes/users'
+import { storesRouter } from './routes/stores'
 
 const app = express()
 
@@ -20,6 +22,9 @@ app.get('/api/health', (req, res) => {
     message: 'Haul API is running!'
   })
 })
+
+app.use('/api/users', usersRouter)
+app.use('/api/stores', storesRouter)
 
 // Start server
 app.listen(env.PORT, () => {

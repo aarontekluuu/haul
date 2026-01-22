@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import { usePrivy } from '@privy-io/react-auth'
 import { AppShell } from '../components/AppShell'
 import { TopBar } from '../components/TopBar'
+import { apiPost } from '../utils/api'
 
 function BuyerOnboardingInner() {
   const navigate = useNavigate()
-  const { ready, authenticated, user } = usePrivy()
+  const { ready, authenticated, user, getAccessToken } = usePrivy()
   const [categories, setCategories] = useState<string[]>([])
   const [vibes, setVibes] = useState<string[]>([])
   const [distance, setDistance] = useState(5)
@@ -33,7 +34,7 @@ function BuyerOnboardingInner() {
     setter([...current, value])
   }
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     const payload = {
       categories: categories.length ? categories : categoryOptions,
       vibes: vibes.length ? vibes : vibeOptions,
@@ -41,6 +42,14 @@ function BuyerOnboardingInner() {
       priceRange: [5, price],
     }
     localStorage.setItem('haul-preferences', JSON.stringify(payload))
+    const token = await getAccessToken()
+    if (token) {
+      try {
+        await apiPost('/api/users/register', token, { preferences: payload })
+      } catch {
+        // Non-blocking for demo; local storage still drives UX.
+      }
+    }
     navigate('/buyer/swipe')
   }
 
