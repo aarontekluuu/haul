@@ -4,12 +4,13 @@ import { usePrivy } from '@privy-io/react-auth'
 import { AppShell } from '../components/AppShell'
 import { TopBar } from '../components/TopBar'
 
-export function StoreAuth() {
+function StoreAuthInner() {
   const navigate = useNavigate()
   const { ready, authenticated, login, user } = usePrivy()
 
   useEffect(() => {
     if (ready && authenticated) {
+      localStorage.setItem('haul-role', 'store')
       navigate('/store/onboarding')
     }
   }, [authenticated, navigate, ready])
@@ -17,12 +18,6 @@ export function StoreAuth() {
   return (
     <AppShell>
       <TopBar title="Store Login" backTo="/" />
-
-      {!import.meta.env.VITE_PRIVY_APP_ID && (
-        <div className="rounded-[22px] bg-rose-50 p-4 text-xs text-rose-700">
-          Missing `VITE_PRIVY_APP_ID`. Add it to `frontend/.env` to enable login.
-        </div>
-      )}
 
       <div className="rounded-[28px] bg-white/90 p-5 shadow-sm">
         <div className="text-sm font-semibold">Store account access</div>
@@ -46,4 +41,20 @@ export function StoreAuth() {
       )}
     </AppShell>
   )
+}
+
+export function StoreAuth() {
+  const hasPrivy = Boolean(import.meta.env.VITE_PRIVY_APP_ID)
+  if (!hasPrivy) {
+    return (
+      <AppShell>
+        <TopBar title="Store Login" backTo="/" />
+        <div className="rounded-[22px] bg-rose-50 p-4 text-xs text-rose-700">
+          Missing `VITE_PRIVY_APP_ID`. Add it to `frontend/.env` to enable login.
+        </div>
+      </AppShell>
+    )
+  }
+
+  return <StoreAuthInner />
 }

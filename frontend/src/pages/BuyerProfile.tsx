@@ -3,7 +3,7 @@ import { BottomNav } from '../components/BottomNav'
 import { TopBar } from '../components/TopBar'
 import { usePrivy } from '@privy-io/react-auth'
 
-export function BuyerProfile() {
+function BuyerProfileInner() {
   const { authenticated, user, logout } = usePrivy()
 
   return (
@@ -67,4 +67,23 @@ export function BuyerProfile() {
       <BottomNav />
     </>
   )
+}
+
+export function BuyerProfile() {
+  const hasPrivy = Boolean(import.meta.env.VITE_PRIVY_APP_ID)
+  if (!hasPrivy) {
+    return (
+      <>
+        <AppShell>
+          <TopBar title="Buyer Profile" backTo="/buyer/swipe" />
+          <div className="rounded-[22px] bg-rose-50 p-4 text-xs text-rose-700">
+            Missing `VITE_PRIVY_APP_ID`. Add it to `frontend/.env` to continue.
+          </div>
+        </AppShell>
+        <BottomNav />
+      </>
+    )
+  }
+
+  return <BuyerProfileInner />
 }

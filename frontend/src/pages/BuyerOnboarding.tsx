@@ -4,9 +4,9 @@ import { usePrivy } from '@privy-io/react-auth'
 import { AppShell } from '../components/AppShell'
 import { TopBar } from '../components/TopBar'
 
-export function BuyerOnboarding() {
+function BuyerOnboardingInner() {
   const navigate = useNavigate()
-  const { ready, authenticated } = usePrivy()
+  const { ready, authenticated, user } = usePrivy()
   const [categories, setCategories] = useState<string[]>([])
   const [vibes, setVibes] = useState<string[]>([])
   const [distance, setDistance] = useState(5)
@@ -50,9 +50,41 @@ export function BuyerOnboarding() {
     }
   }, [authenticated, navigate, ready])
 
+  useEffect(() => {
+    const stored = localStorage.getItem('haul-preferences')
+    if (!stored) {
+      return
+    }
+    try {
+      const parsed = JSON.parse(stored) as {
+        categories?: string[]
+        vibes?: string[]
+        maxDistance?: number
+        priceRange?: [number, number]
+      }
+      setCategories(parsed.categories ?? [])
+      setVibes(parsed.vibes ?? [])
+      setDistance(parsed.maxDistance ?? 5)
+      setPrice(parsed.priceRange?.[1] ?? 25)
+    } catch {
+      return
+    }
+  }, [])
+
   return (
     <AppShell>
       <TopBar title="Buyer Onboarding" backTo="/" />
+
+      <div className="rounded-[24px] bg-white/80 p-4 text-xs text-slate-500 shadow-sm">
+        {authenticated ? (
+          <>
+            Wallet ready · {user?.wallet?.address?.slice(0, 6)}...
+            {user?.wallet?.address?.slice(-4)}
+          </>
+        ) : (
+          'Connecting wallet...'
+        )}
+      </div>
 
       <div className="rounded-[28px] bg-white/80 p-5 shadow-sm">
         <div className="flex items-center justify-between text-xs font-semibold text-slate-500">
@@ -148,4 +180,20 @@ export function BuyerOnboarding() {
       </button>
     </AppShell>
   )
+}
+
+export function BuyerOnboarding() {
+  const hasPrivy = Boolean(import.meta.env.VITE_PRIVY_APP_ID)
+  if (!hasPrivy) {
+    return (
+      <AppShell>
+        <TopBar title="Buyer Onboarding" backTo="/" />
+        <div className="rounded-[22px] bg-rose-50 p-4 text-xs text-rose-700">
+          Missing `VITE_PRIVY_APP_ID`. Add it to `frontend/.env` to continue.
+        </div>
+      </AppShell>
+    )
+  }
+
+  return <BuyerOnboardingInner />
 }
