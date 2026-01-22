@@ -16,6 +16,8 @@ export const apiPost = async <T>(
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({}))
+    // eslint-disable-next-line no-console
+    console.warn('[API]', path, res.status, error)
     throw new Error(error.error || 'Request failed')
   }
 

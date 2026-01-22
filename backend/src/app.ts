@@ -3,6 +3,7 @@ import cors from 'cors'
 import { env } from './env'
 import { usersRouter } from './routes/users'
 import { storesRouter } from './routes/stores'
+import { requestLogger } from './middleware/requestLogger'
 
 export const app = express()
 
@@ -13,6 +14,7 @@ app.use(
     credentials: true,
   }),
 )
+app.use(requestLogger)
 
 app.get('/api/health', (req, res) => {
   res.json({

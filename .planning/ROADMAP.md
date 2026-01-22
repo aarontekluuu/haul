@@ -37,6 +37,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. React frontend renders with TailwindCSS styling
   4. Cloudinary account configured with upload credentials
   5. Environment variables documented and template exists
+**Status Update**:
+  - Health endpoint live; frontend renders with Tailwind
+  - Env templates added; backend + frontend deployed on Vercel
+  - Supabase schema scripted in `backend/database-setup.sql`
 **Plans**: TBD
 
 Plans:
@@ -52,6 +56,11 @@ Plans:
   3. Buyer can sign up with Google/Apple/Email via Privy and receive embedded wallet
   4. Buyer can complete preference quiz with categories, vibes, distance, price range
   5. User authentication persists across browser sessions
+**Status Update**:
+  - Privy login flows added for buyer/store
+  - Auth-protected onboarding screens implemented
+  - `/api/users/register` and `/api/stores/register` wired to Supabase
+  - Save-state UX cues added to onboarding
 **Plans**: TBD
 
 Plans:
@@ -223,8 +232,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Project Setup & Core Infrastructure | 0/TBD | Not started | - |
-| 2. Authentication & Wallet Integration | 0/TBD | Not started | - |
+| 1. Project Setup & Core Infrastructure | 0/TBD | In progress | - |
+| 2. Authentication & Wallet Integration | 0/TBD | In progress | - |
 | 3. Smart Contract Deployment | 0/TBD | Not started | - |
 | 4. Image Upload & Storage | 0/TBD | Not started | - |
 | 5. AI Processing Pipeline | 0/TBD | Not started | - |
@@ -238,4 +247,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 ---
 *Roadmap created: 2026-01-22*
-*Last updated: 2026-01-22*
+*Last updated: 2026-01-22 (Phase 1/2 progress + deployments noted)*
