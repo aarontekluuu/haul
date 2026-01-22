@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   AnimatePresence,
@@ -16,6 +16,9 @@ export function SwipeDeck() {
   const [index, setIndex] = useState(0)
   const [bagCount, setBagCount] = useState(0)
   const [showDetails, setShowDetails] = useState(false)
+  const [stamp, setStamp] = useState<'like' | 'pass' | null>(null)
+  const [pulse, setPulse] = useState<'like' | 'pass' | null>(null)
+  const pulseTimer = useRef<number | null>(null)
   const controls = useAnimation()
   const x = useMotionValue(0)
   const rotate = useTransform(x, [-160, 160], [-10, 10])
@@ -64,11 +67,13 @@ export function SwipeDeck() {
   }
 
   const swipeCard = async (direction: 'left' | 'right') => {
+    setStamp(direction === 'right' ? 'like' : 'pass')
     await controls.start({
       x: direction === 'right' ? 520 : -520,
       opacity: 0,
       transition: { duration: 0.25 },
     })
+    setStamp(null)
     if (direction === 'right') {
       setBagCount((count) => count + 1)
     }
@@ -76,6 +81,16 @@ export function SwipeDeck() {
     controls.set({ x: 0, opacity: 1 })
     x.set(0)
     setShowDetails(false)
+  }
+
+  const triggerPulse = (direction: 'left' | 'right') => {
+    setPulse(direction === 'right' ? 'like' : 'pass')
+    if (pulseTimer.current) {
+      window.clearTimeout(pulseTimer.current)
+    }
+    pulseTimer.current = window.setTimeout(() => {
+      setPulse(null)
+    }, 300)
   }
 
   return (
@@ -164,6 +179,23 @@ export function SwipeDeck() {
                 style={{ backgroundImage: `url(${current.image})` }}
                 onClick={() => setShowDetails(true)}
               >
+                <AnimatePresence>
+                  {stamp && (
+                    <motion.div
+                      className={[
+                        'absolute left-1/2 top-24 -translate-x-1/2 rounded-full border px-5 py-2 text-sm font-semibold tracking-[0.2em]',
+                        stamp === 'like'
+                          ? 'border-[var(--color-success)] text-[var(--color-success)]'
+                          : 'border-[var(--color-error)] text-[var(--color-error)]',
+                      ].join(' ')}
+                      initial={{ opacity: 0, scale: 0.7, rotate: -6 }}
+                      animate={{ opacity: 1, scale: 1, rotate: 6 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                    >
+                      {stamp === 'like' ? 'LIKE' : 'PASS'}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
                 <motion.div
                   className="absolute left-5 top-5 rounded-full border border-white/70 bg-white/80 px-3 py-1 text-xs font-semibold text-[var(--color-secondary)]"
                   style={{ opacity: likeOpacity }}
@@ -201,17 +233,41 @@ export function SwipeDeck() {
         <div className="grid grid-cols-3 gap-3">
           <button
             className="rounded-full border border-slate-200 bg-white/70 py-3 text-sm font-semibold text-slate-500"
-            onClick={() => swipeCard('left')}
+            onClick={() => {
+              triggerPulse('left')
+              swipeCard('left')
+            }}
             type="button"
           >
-            Skip
+            <span className="relative">
+              Skip
+              {pulse === 'pass' && (
+                <motion.span
+                  className="absolute -left-3 -top-2 h-10 w-10 rounded-full border border-slate-300"
+                  initial={{ opacity: 0.6, scale: 0.6 }}
+                  animate={{ opacity: 0, scale: 1.4 }}
+                />
+              )}
+            </span>
           </button>
           <button
             className="haul-shadow rounded-full bg-[var(--color-primary)] py-3 text-sm font-semibold text-white"
-            onClick={() => swipeCard('right')}
+            onClick={() => {
+              triggerPulse('right')
+              swipeCard('right')
+            }}
             type="button"
           >
-            Add to Bag
+            <span className="relative">
+              Add to Bag
+              {pulse === 'like' && (
+                <motion.span
+                  className="absolute -left-3 -top-2 h-10 w-10 rounded-full border border-white/70"
+                  initial={{ opacity: 0.6, scale: 0.6 }}
+                  animate={{ opacity: 0, scale: 1.4 }}
+                />
+              )}
+            </span>
           </button>
           <Link
             className="rounded-full border border-slate-200 bg-white/70 py-3 text-center text-sm font-semibold text-slate-600"
