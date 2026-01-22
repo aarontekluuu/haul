@@ -9,10 +9,16 @@ export function Bag() {
   const [items, setItems] = useState(bagItems)
   const subtotal = items.reduce((sum, item) => sum + item.price, 0)
   const breakdown = useMemo(() => {
-    return items.reduce<Record<string, number>>((acc, item) => {
-      acc[item.store] = (acc[item.store] || 0) + item.price
-      return acc
-    }, {})
+    return items.reduce<Record<string, { total: number; items: typeof items }>>(
+      (acc, item) => {
+        const entry = acc[item.store] || { total: 0, items: [] }
+        entry.items = [...entry.items, item]
+        entry.total += item.price
+        acc[item.store] = entry
+        return acc
+      },
+      {},
+    )
   }, [items])
 
   const handleRemove = (id: string) => {
@@ -71,11 +77,21 @@ export function Bag() {
           </div>
           <div className="mt-3 border-t border-slate-100 pt-3 text-xs text-slate-500">
             <div className="font-semibold text-slate-600">By store</div>
-            <div className="mt-2 grid gap-2">
-              {Object.entries(breakdown).map(([store, total]) => (
-                <div className="flex items-center justify-between" key={store}>
-                  <span>{store}</span>
-                  <span>${total}</span>
+            <div className="mt-2 grid gap-3">
+              {Object.entries(breakdown).map(([store, data]) => (
+                <div key={store} className="rounded-[16px] bg-slate-50 px-3 py-3">
+                  <div className="flex items-center justify-between text-xs font-semibold text-slate-600">
+                    <span>{store}</span>
+                    <span>${data.total}</span>
+                  </div>
+                  <div className="mt-2 space-y-1 text-[11px] text-slate-500">
+                    {data.items.map((item) => (
+                      <div key={item.id} className="flex justify-between">
+                        <span>{item.name}</span>
+                        <span>${item.price}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>

@@ -310,7 +310,16 @@ export function SwipeDeck() {
                 </div>
                 <div className="mt-3 flex items-center justify-between">
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">
+                    <span
+                      className={[
+                        'rounded-full px-3 py-1 text-slate-700',
+                        current.condition === 'excellent'
+                          ? 'bg-emerald-100'
+                          : current.condition === 'good'
+                            ? 'bg-amber-100'
+                            : 'bg-rose-100',
+                      ].join(' ')}
+                    >
                       {current.condition}
                     </span>
                     <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-600">
@@ -321,6 +330,12 @@ export function SwipeDeck() {
                     ${current.price}
                   </div>
                 </div>
+                <div className="mt-4 h-32 overflow-hidden rounded-[18px] bg-slate-100">
+                  <div
+                    className="h-full w-full bg-cover bg-center"
+                    style={{ backgroundImage: `url(${current.image})` }}
+                  />
+                </div>
                 <p className="mt-3 text-sm text-slate-600">{current.description}</p>
                 <div className="mt-4 rounded-[18px] bg-slate-50 px-4 py-3 text-xs text-slate-600">
                   <div className="font-semibold text-slate-700">
@@ -328,6 +343,9 @@ export function SwipeDeck() {
                   </div>
                   <div className="mt-1">{current.pickupWindow}</div>
                   <div className="mt-1">{current.address}</div>
+                </div>
+                <div className="mt-3 rounded-[18px] border border-dashed border-slate-200 px-4 py-3 text-xs text-slate-500">
+                  Map preview placeholder
                 </div>
                 <div className="mt-4 flex gap-3">
                   <button
