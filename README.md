@@ -76,6 +76,16 @@ Built for **USC Social Impact Hackathon** (Jan 23-27, 2026)
 2. `/gsd:execute-phase 1` - Build database + API foundation
 3. Continue through 12 phases
 
+## Phase 2 Quick Test (Auth + Wallet)
+
+1. Set `VITE_PRIVY_APP_ID` in `frontend/.env` and `PRIVY_APP_ID` + `PRIVY_APP_SECRET` in `backend/.env`.
+2. Start backend (`backend/`): `npm run dev`.
+3. Start frontend (`frontend/`): `npm run dev`.
+4. Visit `/buyer/auth`, log in via Privy, complete the buyer onboarding form.
+5. Confirm a row appears in Supabase `users` with `preferences`.
+6. Visit `/store/auth`, log in, fill store details, continue.
+7. Confirm a row appears in Supabase `stores` with `wallet_address`, `name`, `address`.
+
 ## Social Impact
 
 - Diverts textile waste from landfills

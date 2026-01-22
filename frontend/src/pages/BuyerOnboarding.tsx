@@ -12,6 +12,9 @@ function BuyerOnboardingInner() {
   const [vibes, setVibes] = useState<string[]>([])
   const [distance, setDistance] = useState(5)
   const [price, setPrice] = useState(25)
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>(
+    'idle',
+  )
 
   const categoryOptions = useMemo(
     () => ['Tops', 'Bottoms', 'Shoes', 'Accessories', 'Outerwear', 'Everything'],
@@ -45,8 +48,11 @@ function BuyerOnboardingInner() {
     const token = await getAccessToken()
     if (token) {
       try {
+        setSaveState('saving')
         await apiPost('/api/users/register', token, { preferences: payload })
+        setSaveState('saved')
       } catch {
+        setSaveState('error')
         // Non-blocking for demo; local storage still drives UX.
       }
     }
@@ -94,6 +100,23 @@ function BuyerOnboardingInner() {
           'Connecting wallet...'
         )}
       </div>
+      {saveState !== 'idle' && (
+        <div
+          className={[
+            'rounded-[22px] px-4 py-3 text-xs shadow-sm',
+            saveState === 'saved'
+              ? 'bg-emerald-50 text-emerald-700'
+              : saveState === 'error'
+                ? 'bg-rose-50 text-rose-700'
+                : 'bg-slate-100 text-slate-600',
+          ].join(' ')}
+        >
+          {saveState === 'saving' && 'Saving preferences to Supabase...'}
+          {saveState === 'saved' && 'Preferences saved.'}
+          {saveState === 'error' &&
+            'Could not save preferences yet. Local settings still apply.'}
+        </div>
+      )}
 
       <div className="rounded-[28px] bg-white/80 p-5 shadow-sm">
         <div className="flex items-center justify-between text-xs font-semibold text-slate-500">

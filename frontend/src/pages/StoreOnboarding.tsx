@@ -11,6 +11,9 @@ function StoreOnboardingInner() {
   const [name, setName] = useState('')
   const [address, setAddress] = useState('')
   const [hours, setHours] = useState('')
+  const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>(
+    'idle',
+  )
 
   useEffect(() => {
     if (ready && !authenticated) {
@@ -44,6 +47,7 @@ function StoreOnboardingInner() {
     )
     const token = await getAccessToken()
     if (token) {
+      setSaveState('saving')
       const coords = await new Promise<{ lat: number; lng: number }>((resolve) => {
         if (!navigator.geolocation) {
           resolve({ lat: 34.0522, lng: -118.2437 })
@@ -69,7 +73,9 @@ function StoreOnboardingInner() {
           lat: coords.lat,
           lng: coords.lng,
         })
+        setSaveState('saved')
       } catch {
+        setSaveState('error')
         // Non-blocking for demo; local storage still drives UX.
       }
     }
@@ -90,6 +96,23 @@ function StoreOnboardingInner() {
           'Connecting wallet...'
         )}
       </div>
+      {saveState !== 'idle' && (
+        <div
+          className={[
+            'rounded-[22px] px-4 py-3 text-xs shadow-sm',
+            saveState === 'saved'
+              ? 'bg-emerald-50 text-emerald-700'
+              : saveState === 'error'
+                ? 'bg-rose-50 text-rose-700'
+                : 'bg-slate-100 text-slate-600',
+          ].join(' ')}
+        >
+          {saveState === 'saving' && 'Saving store profile to Supabase...'}
+          {saveState === 'saved' && 'Store profile saved.'}
+          {saveState === 'error' &&
+            'Could not save profile yet. Local settings still apply.'}
+        </div>
+      )}
 
       <div className="rounded-[28px] bg-white/90 p-5 shadow-sm">
         <div className="text-sm font-semibold">Business details</div>
