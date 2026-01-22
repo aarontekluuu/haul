@@ -15,3 +15,8 @@
 npm install
 npm run dev
 ```
+
+### Deploy on Vercel (backend)
+1. Create a new Vercel project with root directory `backend`.
+2. Set build settings: default (Vercel detects `api/index.ts`).
+3. Add env vars: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `PRIVY_APP_ID`, `PRIVY_APP_SECRET`, `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `FRONTEND_URL`.
