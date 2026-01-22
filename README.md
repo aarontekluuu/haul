@@ -69,6 +69,7 @@ Built for **USC Social Impact Hackathon** (Jan 23-27, 2026)
 **Environment:**
 - Copy `backend/.env.example` → `backend/.env`
 - Copy `frontend/.env.example` → `frontend/.env`
+- Backend setup guide: `backend/SETUP.md`
 
 **Next Steps:**
 1. `/gsd:plan-phase 1` - Plan core infrastructure

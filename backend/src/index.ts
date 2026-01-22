@@ -1,13 +1,14 @@
 import 'dotenv/config'
 import express from 'express'
 import cors from 'cors'
+import { env } from './env'
 
 const app = express()
 
 // Middleware
 app.use(express.json())
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: env.FRONTEND_URL,
   credentials: true,
 }))
 
@@ -21,8 +22,7 @@ app.get('/api/health', (req, res) => {
 })
 
 // Start server
-const PORT = process.env.PORT || 3000
-app.listen(PORT, () => {
-  console.log(`🚀 Haul API running on http://localhost:${PORT}`)
-  console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`)
+app.listen(env.PORT, () => {
+  console.log(`🚀 Haul API running on http://localhost:${env.PORT}`)
+  console.log(`📝 Environment: ${env.NODE_ENV}`)
 })

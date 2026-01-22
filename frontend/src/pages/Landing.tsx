@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { AppShell } from '../components/AppShell'
+import { HealthStatus } from '../components/HealthStatus'
 
 export function Landing() {
   return (
@@ -48,6 +49,8 @@ export function Landing() {
           I'm a Thrift Store
         </Link>
       </div>
+
+      <HealthStatus />
 
       <div className="rounded-[26px] bg-[var(--color-secondary)] p-5 text-white">
         <div className="text-sm font-semibold">
