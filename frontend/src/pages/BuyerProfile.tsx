@@ -1,8 +1,11 @@
 import { AppShell } from '../components/AppShell'
 import { BottomNav } from '../components/BottomNav'
 import { TopBar } from '../components/TopBar'
+import { usePrivy } from '@privy-io/react-auth'
 
 export function BuyerProfile() {
+  const { authenticated, user, logout } = usePrivy()
+
   return (
     <>
       <AppShell>
@@ -30,13 +33,35 @@ export function BuyerProfile() {
 
         <div className="rounded-[28px] bg-white/90 p-5 text-sm shadow-sm">
           <div className="text-xs font-semibold text-slate-500">Wallet</div>
-          <div className="mt-2 text-lg font-semibold">$24.00 USDC</div>
-          <button
-            className="mt-4 rounded-full bg-[var(--color-primary)] px-4 py-3 text-sm font-semibold text-white"
-            type="button"
-          >
-            Add funds
-          </button>
+          {authenticated ? (
+            <>
+              <div className="mt-2 text-lg font-semibold">$24.00 USDC</div>
+              <div className="mt-2 text-xs text-slate-500">
+                {user?.wallet?.address
+                  ? `Wallet ${user.wallet.address.slice(0, 6)}...${user.wallet.address.slice(-4)}`
+                  : 'Wallet connected'}
+              </div>
+              <div className="mt-4 flex gap-2">
+                <button
+                  className="rounded-full bg-[var(--color-primary)] px-4 py-3 text-sm font-semibold text-white"
+                  type="button"
+                >
+                  Add funds
+                </button>
+                <button
+                  className="rounded-full border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600"
+                  type="button"
+                  onClick={() => logout()}
+                >
+                  Log out
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="mt-2 text-xs text-slate-500">
+              Connect a wallet to view balance.
+            </div>
+          )}
         </div>
       </AppShell>
       <BottomNav />

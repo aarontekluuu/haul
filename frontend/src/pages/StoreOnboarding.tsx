@@ -1,8 +1,19 @@
-import { Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { usePrivy } from '@privy-io/react-auth'
 import { AppShell } from '../components/AppShell'
 import { TopBar } from '../components/TopBar'
 
 export function StoreOnboarding() {
+  const navigate = useNavigate()
+  const { ready, authenticated } = usePrivy()
+
+  useEffect(() => {
+    if (ready && !authenticated) {
+      navigate('/store/auth')
+    }
+  }, [authenticated, navigate, ready])
+
   return (
     <AppShell>
       <TopBar title="Store Setup" backTo="/" />

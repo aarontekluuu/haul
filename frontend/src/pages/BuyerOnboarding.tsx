@@ -1,10 +1,12 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { usePrivy } from '@privy-io/react-auth'
 import { AppShell } from '../components/AppShell'
 import { TopBar } from '../components/TopBar'
 
 export function BuyerOnboarding() {
   const navigate = useNavigate()
+  const { ready, authenticated } = usePrivy()
   const [categories, setCategories] = useState<string[]>([])
   const [vibes, setVibes] = useState<string[]>([])
   const [distance, setDistance] = useState(5)
@@ -41,6 +43,12 @@ export function BuyerOnboarding() {
     localStorage.setItem('haul-preferences', JSON.stringify(payload))
     navigate('/buyer/swipe')
   }
+
+  useEffect(() => {
+    if (ready && !authenticated) {
+      navigate('/buyer/auth')
+    }
+  }, [authenticated, navigate, ready])
 
   return (
     <AppShell>

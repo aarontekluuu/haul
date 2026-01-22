@@ -38,13 +38,13 @@ export function Landing() {
       <div className="grid gap-3">
         <Link
           className="haul-shadow rounded-full bg-[var(--color-primary)] px-6 py-4 text-center text-sm font-semibold text-white transition hover:translate-y-[-1px]"
-          to="/buyer/onboarding"
+          to="/buyer/auth"
         >
           Start Swiping
         </Link>
         <Link
           className="rounded-full border border-white/70 bg-white/70 px-6 py-4 text-center text-sm font-semibold text-[var(--color-secondary)] shadow-sm transition hover:translate-y-[-1px]"
-          to="/store/onboarding"
+          to="/store/auth"
         >
           I'm a Thrift Store
         </Link>

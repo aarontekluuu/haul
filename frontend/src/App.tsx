@@ -1,9 +1,11 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { Bag } from './pages/Bag'
+import { BuyerAuth } from './pages/BuyerAuth'
 import { BuyerOnboarding } from './pages/BuyerOnboarding'
 import { BuyerProfile } from './pages/BuyerProfile'
 import { CheckoutSuccess } from './pages/CheckoutSuccess'
 import { Landing } from './pages/Landing'
+import { StoreAuth } from './pages/StoreAuth'
 import { StoreDashboard } from './pages/StoreDashboard'
 import { StoreOnboarding } from './pages/StoreOnboarding'
 import { StoreReview } from './pages/StoreReview'
@@ -14,11 +16,13 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/buyer/auth" element={<BuyerAuth />} />
       <Route path="/buyer/onboarding" element={<BuyerOnboarding />} />
       <Route path="/buyer/swipe" element={<SwipeDeck />} />
       <Route path="/buyer/bag" element={<Bag />} />
       <Route path="/buyer/checkout-success" element={<CheckoutSuccess />} />
       <Route path="/buyer/profile" element={<BuyerProfile />} />
+      <Route path="/store/auth" element={<StoreAuth />} />
       <Route path="/store/onboarding" element={<StoreOnboarding />} />
       <Route path="/store/upload" element={<StoreUpload />} />
       <Route path="/store/review" element={<StoreReview />} />
