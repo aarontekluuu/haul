@@ -1,10 +1,12 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AppShell } from '../components/AppShell'
-import { HealthStatus } from '../components/HealthStatus'
 
 export function Landing() {
+  const [showRole, setShowRole] = useState(false)
+
   return (
-    <AppShell>
+    <AppShell maxWidthClass="max-w-[720px]">
       <div className="relative overflow-hidden rounded-[32px] bg-white/80 p-6 shadow-xl">
         <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-[var(--color-accent)] opacity-30 blur-2xl" />
         <div className="absolute -left-8 bottom-6 h-32 w-32 rounded-full bg-[var(--color-secondary)] opacity-20 blur-2xl" />
@@ -14,52 +16,56 @@ export function Landing() {
               Haul
             </div>
             <h1 className="text-3xl font-semibold leading-tight text-[var(--color-ink)]">
-              Your local thrift, swiped right.
+              Find your next Haul
             </h1>
             <p className="text-sm leading-relaxed text-slate-600">
-              Sustainable fashion. Zero effort. All the finds. Upload once, let AI
-              do the rest, and let buyers swipe through fresh inventory nearby.
+              Swipe and match with steals from thrift stores near you.
             </p>
           </div>
-          <div className="grid grid-cols-3 gap-3 text-[13px] text-slate-600">
-            <div className="rounded-[20px] bg-white px-3 py-4 shadow-sm">
-              AI listing in under 2 minutes.
+        </div>
+      </div>
+
+      <button
+        className="haul-shadow rounded-full bg-[var(--color-primary)] px-6 py-4 text-center text-sm font-semibold text-white transition hover:translate-y-[-1px]"
+        type="button"
+        onClick={() => setShowRole(true)}
+      >
+        Get Started
+      </button>
+
+      {showRole && (
+        <div className="fixed inset-0 z-30 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-[520px] rounded-[28px] bg-white p-6 shadow-xl">
+            <div className="flex items-center justify-between">
+              <div className="text-lg font-semibold">Who are you?</div>
+              <button
+                className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-500"
+                type="button"
+                onClick={() => setShowRole(false)}
+              >
+                Close
+              </button>
             </div>
-            <div className="rounded-[20px] bg-white px-3 py-4 shadow-sm">
-              Swipe deck built for Gen-Z.
+            <div className="mt-4 grid gap-3">
+              <Link
+                className="rounded-[18px] border border-slate-200 bg-white px-4 py-4 text-sm font-semibold text-slate-700 shadow-sm"
+                to="/store/auth"
+              >
+                I'm a thrift store
+              </Link>
+              <Link
+                className="rounded-[18px] bg-[var(--color-secondary)] px-4 py-4 text-sm font-semibold text-white shadow-sm"
+                to="/buyer/auth"
+              >
+                I'm a customer
+              </Link>
             </div>
-            <div className="rounded-[20px] bg-white px-3 py-4 shadow-sm">
-              Crypto checkout with pickup code.
+            <div className="mt-3 text-xs text-slate-500">
+              You can switch roles later.
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="grid gap-3">
-        <Link
-          className="haul-shadow rounded-full bg-[var(--color-primary)] px-6 py-4 text-center text-sm font-semibold text-white transition hover:translate-y-[-1px]"
-          to="/buyer/auth"
-        >
-          Start Swiping
-        </Link>
-        <Link
-          className="rounded-full border border-white/70 bg-white/70 px-6 py-4 text-center text-sm font-semibold text-[var(--color-secondary)] shadow-sm transition hover:translate-y-[-1px]"
-          to="/store/auth"
-        >
-          I'm a Thrift Store
-        </Link>
-      </div>
-
-      <HealthStatus />
-
-      <div className="rounded-[26px] bg-[var(--color-secondary)] p-5 text-white">
-        <div className="text-sm font-semibold">
-          Join 500+ USC students saving the planet one haul at a time.
-        </div>
-        <div className="mt-2 text-xs text-white/70">
-          Local pickups, verified thrift stores, and fast onboarding.
-        </div>
-      </div>
+      )}
     </AppShell>
   )
 }
